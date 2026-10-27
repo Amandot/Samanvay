@@ -13,8 +13,19 @@ db_url = settings.DATABASE_URL
 if db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
 
-connect_args = {"check_same_thread": False} if db_url.startswith("sqlite") else {}
-engine = create_engine(db_url, connect_args=connect_args)
+engine_kwargs = {}
+connect_args = {}
+
+if db_url.startswith("sqlite"):
+    connect_args["check_same_thread"] = False
+else:
+    # Production PostgreSQL (Supabase, Render Postgres, AWS RDS, etc.)
+    engine_kwargs["pool_pre_ping"] = True
+    engine_kwargs["pool_recycle"] = 300
+    if "localhost" not in db_url and "127.0.0.1" not in db_url and "sslmode" not in db_url:
+        connect_args["sslmode"] = "require"
+
+engine = create_engine(db_url, connect_args=connect_args, **engine_kwargs)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()

@@ -52,8 +52,15 @@ If you prefer configuring manually in the Render dashboard:
 | `AUTO_SEED` | `true` | Automatically seeds demo data on fresh DB |
 | `DEMO_MODE` | `true` | Enables role chips and showcase demo cases |
 
-*(Optional PostgreSQL Database)*:
-If you attach a Render PostgreSQL instance, Render automatically provides `DATABASE_URL`. The backend automatically converts `postgres://` to `postgresql://` and seeds tables.
+*(PostgreSQL Database: Supabase or Render)*:
+- **Supabase (Recommended)**:
+  1. Create a free project at [supabase.com](https://supabase.com).
+  2. Go to **Project Settings** → **Database** → scroll to **Connection string** → click **URI**.
+  3. Select **Mode: Session** (port 5432) or **Direct** (port 5432).
+  4. Copy URI: `postgresql://postgres.[REF]:[YOUR-PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres` (replace `[YOUR-PASSWORD]` with your database password).
+  5. Add as `DATABASE_URL` in your Render Environment Variables.
+- **Render PostgreSQL**:
+  If you attach a Render PostgreSQL instance, Render automatically provides `DATABASE_URL`. The backend automatically converts `postgres://` to `postgresql://` and seeds tables.
 
 5. Click **Create Web Service**.
 6. Once deployed, test the health check in your browser:
