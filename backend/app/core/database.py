@@ -9,9 +9,27 @@ from app.core.config import settings
 def compile_uuid_sqlite(type_, compiler, **kw):
     return "CHAR(36)"
 
-db_url = settings.DATABASE_URL
-if db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql://", 1)
+import urllib.parse
+
+
+def normalize_db_url(url: str) -> str:
+    url = url.strip().strip('"').strip("'")
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://", 1)
+    # Automatically URL-encode special characters in passwords (e.g. '@' in passwords)
+    if url.count("@") > 1 and "://" in url:
+        prefix, rest = url.split("://", 1)
+        last_at_idx = rest.rfind("@")
+        user_pass = rest[:last_at_idx]
+        host_db = rest[last_at_idx + 1:]
+        if ":" in user_pass:
+            username, password = user_pass.split(":", 1)
+            password = urllib.parse.quote_plus(urllib.parse.unquote_plus(password))
+            url = f"{prefix}://{username}:{password}@{host_db}"
+    return url
+
+
+db_url = normalize_db_url(settings.DATABASE_URL)
 
 engine_kwargs = {}
 connect_args = {}
