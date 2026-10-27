@@ -59,6 +59,8 @@ def on_startup():
                         ]:
                             script_file = os.path.join(cand, "seed_demo_data.py")
                             if os.path.isfile(script_file):
+                                if cand not in sys.path:
+                                    sys.path.insert(0, cand)
                                 import importlib.util
                                 spec = importlib.util.spec_from_file_location("seed_demo_data_mod", script_file)
                                 if spec and spec.loader:

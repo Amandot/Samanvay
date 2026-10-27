@@ -23,5 +23,5 @@ class OverlapFeedback(Base):
     note = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    related_case = relationship("RelatedCase")
+    related_case = relationship("RelatedCase", overlaps="feedback")
     officer = relationship("User")

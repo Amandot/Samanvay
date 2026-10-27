@@ -31,6 +31,9 @@ if not os.path.isdir(BACKEND_DIR):
     BACKEND_DIR = BASE_DIR
 sys.path.insert(0, BACKEND_DIR)
 sys.path.insert(0, os.path.join(BASE_DIR, "scripts"))
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+if CURRENT_DIR not in sys.path:
+    sys.path.insert(0, CURRENT_DIR)
 
 if "DATABASE_URL" not in os.environ:
     os.environ["DATABASE_URL"] = "sqlite:///" + os.path.join(
@@ -75,7 +78,10 @@ from app.utils.helpers import (
     generate_pseudo_id,
     notify,
 )
-from institution_catalog import CATALOG
+try:
+    from institution_catalog import CATALOG
+except ImportError:
+    from scripts.institution_catalog import CATALOG
 
 # Fixed seed for 100% deterministic reproducibility
 random.seed(42)

@@ -16,5 +16,5 @@ class CoordinationMessage(Base):
     mentions = Column(Text, nullable=True)  # JSON-encoded array of mentioned user IDs or roles
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    related_case = relationship("RelatedCase")
+    related_case = relationship("RelatedCase", overlaps="messages")
     officer = relationship("User")

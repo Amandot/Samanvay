@@ -17,5 +17,5 @@ class CoordinationDecision(Base):
     decided_by = Column(Text, nullable=True)  # JSON-encoded array of officer IDs who signed/agreed
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    related_case = relationship("RelatedCase")
+    related_case = relationship("RelatedCase", overlaps="decisions")
     lead_bureau = relationship("Bureau")
