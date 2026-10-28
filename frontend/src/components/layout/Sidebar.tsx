@@ -47,9 +47,13 @@ export default function Sidebar() {
       <Link
         to="/welcome"
         title="View Samanvay System Overview"
-        className="flex h-16 items-center gap-2 border-b border-slate-700 px-4 hover:bg-slate-800/60 transition group cursor-pointer"
+        className="flex h-16 items-center gap-2.5 border-b border-slate-700 px-4 hover:bg-slate-800/60 transition group cursor-pointer"
       >
-        <ShieldCheck className="h-7 w-7 text-amber-400 group-hover:scale-105 transition-transform" />
+        <img
+          src="/logo.png"
+          alt="Samanvay Logo"
+          className="h-9 w-9 rounded-lg object-contain bg-white p-0.5 group-hover:scale-105 transition-transform shrink-0"
+        />
         <div>
           <h1 className="text-sm font-bold leading-tight tracking-tight">Samanvay (समन्वय)</h1>
           <p className="text-[11px] text-slate-400 group-hover:text-amber-300 transition-colors">

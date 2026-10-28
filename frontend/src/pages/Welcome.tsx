@@ -237,9 +237,11 @@ export default function Welcome() {
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Brand Logo & Tagline */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-400 text-stone-950 shadow-sm shadow-amber-400/30 group-hover:scale-105 transition-transform">
-              <ShieldCheck className="h-6 w-6 stroke-[2.4]" />
-            </div>
+            <img
+              src="/logo.png"
+              alt="Samanvay Logo"
+              className="h-11 w-11 rounded-xl object-contain shadow-xs group-hover:scale-105 transition-transform bg-white p-0.5 border border-stone-200/80"
+            />
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="text-xl font-black tracking-tight text-slate-900">
@@ -1211,9 +1213,11 @@ export default function Welcome() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500 text-stone-950 shadow-md">
-                <ShieldCheck className="h-6 w-6 stroke-[2.2]" />
-              </div>
+              <img
+                src="/logo.png"
+                alt="Samanvay Logo"
+                className="h-11 w-11 rounded-xl object-contain shadow-xs bg-white p-0.5 border border-stone-200"
+              />
               <div>
                 <span className="font-serif text-lg font-bold text-stone-900">
                   SAMANVAY <span className="font-sans text-sm font-normal text-amber-800">(समन्वय)</span>

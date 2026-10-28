@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
-import { ShieldCheck } from 'lucide-react'
 import { useAuth, type AuthUser } from '../context/AuthContext'
 import { errorMessage } from '../lib/api'
 import { Button, ErrorBanner, Field, Input } from '../components/ui'
@@ -76,9 +75,11 @@ export default function Login() {
         <div className="hidden flex-col justify-between bg-navy p-10 text-white md:flex">
           <div>
             <div className="flex items-center gap-3">
-              <div className="rounded-xl bg-amber-500 p-2 text-navy">
-                <ShieldCheck className="h-7 w-7" />
-              </div>
+              <img
+                src="/logo.png"
+                alt="Samanvay Logo"
+                className="h-12 w-12 rounded-xl object-contain bg-white p-1 shadow-md"
+              />
               <div>
                 <h1 className="text-xl font-bold">Samanvay</h1>
                 <p className="text-xs text-slate-300">AICTE Regulatory · Secure Complaint Coordination</p>
