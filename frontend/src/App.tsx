@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
 import Layout from './layouts/Layout'
+import Welcome from './pages/Welcome'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Institutions from './pages/Institutions'
@@ -45,10 +46,11 @@ function RequireAdmin() {
 function App() {
   return (
     <Routes>
+      <Route path="/" element={<Welcome />} />
+      <Route path="/welcome" element={<Welcome />} />
       <Route path="/login" element={<Login />} />
       <Route element={<RequireAuth />}>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Navigate to="/dashboard?tab=my-desk" replace />} />
+        <Route element={<Layout />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="my-desk" element={<Navigate to="/dashboard?tab=my-desk" replace />} />
           <Route path="institutions" element={<Institutions />} />
@@ -66,7 +68,7 @@ function App() {
           </Route>
         </Route>
       </Route>
-      <Route path="*" element={<Navigate to="/dashboard?tab=my-desk" replace />} />
+      <Route path="*" element={<Navigate to="/welcome" replace />} />
     </Routes>
   )
 }

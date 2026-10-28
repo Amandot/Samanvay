@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { ShieldCheck } from 'lucide-react'
 import { useAuth, type AuthUser } from '../context/AuthContext'
 import { errorMessage } from '../lib/api'
@@ -81,7 +81,7 @@ export default function Login() {
               </div>
               <div>
                 <h1 className="text-xl font-bold">Samanvay</h1>
-                <p className="text-xs text-slate-300">AICTE SIH26264 · Secure Complaint Coordination</p>
+                <p className="text-xs text-slate-300">AICTE Regulatory · Secure Complaint Coordination</p>
               </div>
             </div>
             <h2 className="mt-10 text-3xl font-bold leading-tight">
@@ -99,13 +99,21 @@ export default function Login() {
             </ul>
           </div>
           <div className="rounded-lg border border-slate-700 bg-slate-800/60 p-3 text-xs text-slate-300">
-            Samanvay AICTE Prototype · AICTE SIH26264 · Secure Complaint Coordination System.
+            Samanvay AICTE · Official Complaint Coordination &amp; Regulatory Tracking Platform.
           </div>
         </div>
 
         <div className="p-6 sm:p-10">
-          <div className="mb-6 inline-flex rounded bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
-            DEMO ENVIRONMENT
+          <div className="mb-4 flex items-center justify-between">
+            <div className="inline-flex rounded bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
+              DEMO ENVIRONMENT
+            </div>
+            <Link
+              to="/welcome"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              ← Project Info &amp; Demo Guide
+            </Link>
           </div>
           <h2 className="text-2xl font-bold text-slate-900">Sign in</h2>
           <p className="mt-1 text-sm text-slate-500">

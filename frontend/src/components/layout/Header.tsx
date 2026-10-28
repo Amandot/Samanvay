@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Bell, Globe, LogOut, Sparkles } from 'lucide-react'
+import { Bell, Globe, LogOut, Sparkles, Info } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { useAuth } from '../../context/AuthContext'
@@ -92,6 +92,17 @@ export default function Header() {
         >
           <Sparkles className="h-3.5 w-3.5 text-purple-600" />
           <span className="hidden sm:inline">Daily Briefing</span>
+        </button>
+
+        {/* Project Info / Welcome Page */}
+        <button
+          type="button"
+          onClick={() => navigate('/welcome')}
+          className="flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800 hover:bg-amber-100 transition-colors"
+          title="Project Info &amp; System Architecture"
+        >
+          <Info className="h-3.5 w-3.5 text-amber-600" />
+          <span className="hidden sm:inline">Project Info</span>
         </button>
 
         <button

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, Link, useLocation } from 'react-router-dom'
 import {
   Inbox,
   FileText,
@@ -12,6 +12,7 @@ import {
   Settings,
   ShieldCheck,
   ChevronDown,
+  Sparkles,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useLanguage } from '../../context/LanguageContext'
@@ -43,13 +44,19 @@ export default function Sidebar() {
 
   return (
     <aside className="hidden h-full w-64 shrink-0 flex-col bg-navy text-white md:flex">
-      <div className="flex h-16 items-center gap-2 border-b border-slate-700 px-4">
-        <ShieldCheck className="h-7 w-7 text-amber-400" />
+      <Link
+        to="/welcome"
+        title="View Samanvay System Overview"
+        className="flex h-16 items-center gap-2 border-b border-slate-700 px-4 hover:bg-slate-800/60 transition group cursor-pointer"
+      >
+        <ShieldCheck className="h-7 w-7 text-amber-400 group-hover:scale-105 transition-transform" />
         <div>
           <h1 className="text-sm font-bold leading-tight tracking-tight">Samanvay (समन्वय)</h1>
-          <p className="text-[11px] text-slate-400">AICTE Complaint Coordination</p>
+          <p className="text-[11px] text-slate-400 group-hover:text-amber-300 transition-colors">
+            AICTE Complaint Coordination
+          </p>
         </div>
-      </div>
+      </Link>
       <div className="bg-emerald-600 px-4 py-1.5 text-center text-[10px] font-bold tracking-wider text-white uppercase">
         {t('demo.badge')}
       </div>
@@ -118,6 +125,15 @@ export default function Sidebar() {
           </div>
         )}
       </nav>
+      <div className="p-2 border-t border-slate-800">
+        <Link
+          to="/welcome"
+          className="flex items-center gap-2 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-2 text-xs font-semibold transition group"
+        >
+          <Sparkles className="h-4 w-4 text-amber-400 group-hover:scale-110 transition-transform shrink-0" />
+          <span>Project Info &amp; Demo Guide</span>
+        </Link>
+      </div>
       <div className="border-t border-slate-700 px-4 py-3 bg-slate-900/40">
         <p className="truncate text-xs font-semibold text-slate-200">{user?.full_name}</p>
         <p className="truncate text-[11px] text-slate-400">
