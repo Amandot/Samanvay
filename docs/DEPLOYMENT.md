@@ -115,3 +115,25 @@ Once your Vercel app is live:
    - Click **Overlaps** -> Open a Coordination Room -> Joint decision modal renders cleanly.
 3. **Deep Links**:
    - Refresh the browser on `/institutions/<id>` or `/complaints` -> SPA routing works without 404.
+
+---
+
+## 5. Free-Tier Cold Start (Render Inactivity Spin-Down)
+
+### Why does login take longer after being away?
+On Render's **Free Tier**, web services automatically spin down (hibernate) after **15 minutes of inactivity** to save resources. When someone visits the website after a long time and logs in:
+1. Render has to start a new container, boot Python/Uvicorn, and initialize the application (**Cold Start**, takes ~30–50 seconds).
+2. Once awake, the container stays hot in memory for 15 minutes, making all subsequent logins and requests **instant** (<100ms).
+
+### Solution: Keep Render Awake 24/7 (100% Free)
+You can prevent Render from going to sleep by setting up a free HTTP ping monitor:
+1. Go to [UptimeRobot.com](https://uptimerobot.com) (free account) or [cron-job.org](https://cron-job.org).
+2. Click **Add New Monitor**:
+   - **Monitor Type**: `HTTP(s)`
+   - **Friendly Name**: `Samanvay Backend Ping`
+   - **URL / IP**: `https://<your-render-backend>.onrender.com/health`
+   - **Monitoring Interval**: Every `10 minutes` (Render sleeps after 15 mins, so 10 mins prevents sleeping).
+3. Click **Create Monitor**.
+
+Now your backend will stay awake 24/7 with zero cold starts!
+

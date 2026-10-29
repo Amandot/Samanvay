@@ -17,7 +17,8 @@ class Settings(BaseSettings):
 
     # Comma separated list, e.g. "http://localhost:3000,http://localhost:5173"
     ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:5173,http://localhost:8000"
-    CORS_ORIGIN_REGEX: str = r"https://.*\.vercel\.app"
+    CORS_ORIGIN_REGEX: str = r"^(https?://.*\.vercel\.app|https?://localhost(:\d+)?|https?://127\.0\.0\.1(:\d+)?|https?://192\.168\.\d+\.\d+(:\d+)?|https?://10\.\d+\.\d+\.\d+(:\d+)?|https?://172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+(:\d+)?|https?://.*\.onrender\.com)$"
+
 
     AUTO_SEED: bool = True
 

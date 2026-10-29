@@ -1,7 +1,7 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth, type AuthUser } from '../context/AuthContext'
-import { errorMessage } from '../lib/api'
+import { errorMessage, warmBackend } from '../lib/api'
 import { Button, ErrorBanner, Field, Input } from '../components/ui'
 
 const demoAccounts = [
@@ -50,6 +50,11 @@ export default function Login() {
   const navigate = useNavigate()
   const { user, login } = useAuth()
 
+  useEffect(() => {
+    // Pre-warm backend on page load to minimize cold-start delay
+    warmBackend()
+  }, [])
+
   if (user) {
     return <Navigate to={getPostLoginRoute(user.role)} replace />
   }
@@ -58,6 +63,7 @@ export default function Login() {
     event.preventDefault()
     setLoading(true)
     setError('')
+
     try {
       const loggedUser: AuthUser = await login(email.trim(), password)
       const targetRoute = getPostLoginRoute(loggedUser?.role || '')

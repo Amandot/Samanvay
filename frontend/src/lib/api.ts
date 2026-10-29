@@ -1,11 +1,33 @@
 import axios, { AxiosError } from 'axios'
 
-const rawBase = (import.meta.env.VITE_API_BASE_URL || '').trim().replace(/\/$/, '')
-// Prevent duplicate /api if the user sets VITE_API_BASE_URL ending with /api
-export const API_BASE = rawBase.endsWith('/api') ? rawBase.slice(0, -4) : rawBase
+function getBaseUrl(): string {
+  const rawBase = (import.meta.env.VITE_API_BASE_URL || '').trim().replace(/\/$/, '')
+  let base = rawBase.endsWith('/api') ? rawBase.slice(0, -4) : rawBase
+
+  if (typeof window !== 'undefined') {
+    // 1. Upgrade http:// to https:// when viewing over HTTPS (prevents mobile Mixed Content blocking)
+    if (window.location.protocol === 'https:' && base.startsWith('http://')) {
+      base = base.replace(/^http:\/\//i, 'https://')
+    }
+
+    // 2. If base points to localhost/127.0.0.1 but the site is loaded from a mobile device or network IP:
+    // Dynamically replace localhost with the host of the current page so mobile devices reach the host machine
+    if (base && (base.includes('localhost') || base.includes('127.0.0.1'))) {
+      const host = window.location.hostname
+      if (host && host !== 'localhost' && host !== '127.0.0.1') {
+        base = base.replace(/localhost|127\.0\.0\.1/g, host)
+      }
+    }
+  }
+
+  return base
+}
+
+export const API_BASE = getBaseUrl()
 
 export const api = axios.create({
   baseURL: API_BASE,
+  timeout: 60000,
   headers: { 'Content-Type': 'application/json' },
 })
 
@@ -61,3 +83,15 @@ export async function loginRequest(email: string, password: string) {
   })
   return response.data as { access_token: string; token_type: string }
 }
+
+export function warmBackend() {
+  try {
+    // Non-blocking background ping to wake up free-tier cloud instances (e.g. Render)
+    api.get('/health', { timeout: 30000 }).catch(() => {
+      // Suppress background ping errors
+    })
+  } catch {
+    // Non-blocking
+  }
+}
+

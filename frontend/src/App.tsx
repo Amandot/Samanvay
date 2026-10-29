@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
 import Layout from './layouts/Layout'
@@ -16,6 +17,7 @@ import Users from './pages/Users'
 import AuditLogs from './pages/AuditLogs'
 import Settings from './pages/Settings'
 import { useAuth } from './context/AuthContext'
+import { warmBackend } from './lib/api'
 
 function RequireAuth() {
   const { user, loading } = useAuth()
@@ -44,6 +46,10 @@ function RequireAdmin() {
 }
 
 function App() {
+  useEffect(() => {
+    warmBackend()
+  }, [])
+
   return (
     <Routes>
       <Route path="/" element={<Welcome />} />

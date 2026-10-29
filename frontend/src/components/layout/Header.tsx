@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Bell, Globe, LogOut, Sparkles, Info } from 'lucide-react'
+import { Bell, Globe, LogOut, Sparkles, Info, Menu } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { useAuth } from '../../context/AuthContext'
@@ -7,7 +7,11 @@ import { useLanguage } from '../../context/LanguageContext'
 import { Badge } from '../ui'
 import DailyBriefingModal from '../DailyBriefingModal'
 
-export default function Header() {
+interface HeaderProps {
+  onOpenMobileMenu?: () => void
+}
+
+export default function Header({ onOpenMobileMenu }: HeaderProps = {}) {
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuth()
@@ -57,9 +61,19 @@ export default function Header() {
   }
 
   return (
-    <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b bg-white px-6">
-      <div className="flex items-center gap-3">
-        <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+    <header className="flex h-16 shrink-0 items-center justify-between gap-3 border-b bg-white px-3 sm:px-6">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        {onOpenMobileMenu && (
+          <button
+            type="button"
+            onClick={onOpenMobileMenu}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900 md:hidden transition-colors"
+            aria-label="Open navigation menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        )}
+        <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight truncate">
           {getPageTitle()}
         </h2>
         <span className="hidden text-xs text-slate-400 lg:inline-block">|</span>
@@ -67,7 +81,7 @@ export default function Header() {
           {t('brand.subtitle')}
         </span>
       </div>
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
         {/* Language Toggle */}
         <button
           type="button"
