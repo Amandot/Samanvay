@@ -42,6 +42,8 @@ class Settings(BaseSettings):
     DOMAIN_TOPIC_SCORE: float = 0.50
     ENABLE_LLM_SUMMARIZATION: bool = False
     OPENAI_API_KEY: str = ""
+    GEMINI_API_KEY: str = os.environ.get("GEMINI_API_KEY", "")
+
 
     UPLOAD_DIR: str = "./uploads"
     MAX_UPLOAD_SIZE: int = 10485760

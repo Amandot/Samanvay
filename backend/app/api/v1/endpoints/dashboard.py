@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional
 
@@ -203,14 +204,27 @@ def get_my_desk(
 
 
 # ---------------------------------------------------------------------------
-# Daily 60-Second Briefing (Section 5.E)
+# Daily 60-Second Briefing (Section 5.E & Gemini AI Integration)
 # ---------------------------------------------------------------------------
+from app.services.gemini_service import (
+    generate_briefing_with_gemini,
+    verify_gemini_key,
+    get_configured_gemini_key,
+)
+import re
+from app.core.config import settings
+import logging
+
+logger = logging.getLogger("uvicorn")
+
+
 @router.get("/daily-briefing")
-def get_daily_briefing(
+async def get_daily_briefing(
+    gemini_key: Optional[str] = Query(None, description="Optional custom Gemini API key for this request"),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Daily 60-second executive summary for quick situational awareness."""
+    """Daily 60-second executive summary powered by Google Gemini 1.5 Flash."""
     today = date.today()
     user_bureau_id = current_user.bureau_id
 
@@ -218,25 +232,131 @@ def get_daily_briefing(
     if user_bureau_id:
         base_q = base_q.filter(Complaint.assigned_bureau_id == user_bureau_id)
 
+    total_count = base_q.count()
     new_today = base_q.filter(Complaint.received_date >= today - timedelta(days=1)).count()
-    overdue = base_q.filter(Complaint.expected_disposal_date < today, Complaint.current_status.in_(OPEN_STATUSES)).count()
+    overdue = base_q.filter(
+        Complaint.expected_disposal_date < today,
+        Complaint.current_status.in_(OPEN_STATUSES),
+    ).count()
+    critical_count = base_q.filter(
+        Complaint.priority.in_([Priority.HIGH, Priority.URGENT]),
+        Complaint.current_status.in_(OPEN_STATUSES),
+    ).count()
+
     active_overlaps = db.query(RelatedCase).filter(RelatedCase.review_status == ReviewStatus.SUGGESTED).count()
 
-    top_actions = [
-        {"title": "Review Active Overlaps", "desc": f"{active_overlaps} cross-bureau overlap cases require acknowledgment", "link": "/overlaps"},
-        {"title": "Address Overdue Files", "desc": f"{overdue} cases currently past disposal SLA timeline", "link": "/complaints?overdue_only=true"},
-        {"title": "Verify Hash-Chain Integrity", "desc": "Immutable audit trail signature check ready", "link": "/audit-logs"},
+    # Bureau distribution
+    bureau_caseload = {}
+    bureaus = db.query(Bureau).all()
+    for b in bureaus:
+        cnt = db.query(Complaint).filter(Complaint.assigned_bureau_id == b.id, Complaint.current_status.in_(OPEN_STATUSES)).count()
+        bureau_caseload[b.bureau_code or b.bureau_name] = cnt
+
+    # Top institutions with active complaints
+    top_institutions = []
+    inst_counts = (
+        db.query(Institution.institution_name, func.count(Complaint.id).label("c_count"))
+        .join(Complaint, Complaint.institution_id == Institution.id)
+        .filter(Complaint.current_status.in_(OPEN_STATUSES))
+        .group_by(Institution.institution_name)
+        .order_by(func.count(Complaint.id).desc())
+        .limit(4)
+        .all()
+    )
+    for name, cnt in inst_counts:
+        top_institutions.append({"name": name, "open_cases": cnt})
+
+    # Overall coordination health score
+    health_score = 92
+    if total_count > 0:
+        penalty = min(35, (overdue * 3) + (active_overlaps * 2))
+        health_score = max(55, 95 - penalty)
+
+    officer_bureau_name = current_user.bureau.bureau_name if current_user.bureau else "AICTE Regulatory Directorate"
+
+    context = {
+        "officer_name": current_user.full_name,
+        "officer_role": current_user.role.value if hasattr(current_user.role, "value") else str(current_user.role),
+        "officer_bureau": officer_bureau_name,
+        "date_str": today.strftime("%A, %d %B %Y"),
+        "generated_at": datetime.utcnow().isoformat(),
+        "total_complaints": total_count,
+        "new_today": new_today,
+        "overdue_count": overdue,
+        "critical_count": critical_count,
+        "active_overlaps": active_overlaps,
+        "health_score": health_score,
+        "top_institutions": top_institutions,
+        "bureau_caseload": bureau_caseload,
+    }
+
+    # Generate synthesis via Gemini 1.5 Flash (or deterministic engine if unconfigured)
+    briefing = await generate_briefing_with_gemini(context, custom_api_key=gemini_key)
+
+    # Attach backward-compatible fields so older callers also continue working seamlessly
+    briefing["date"] = today.strftime("%A, %d %B %Y")
+    briefing["greeting"] = f"Good day, {current_user.full_name}"
+    briefing["new_cases_today"] = new_today
+    briefing["overdue_cases"] = overdue
+    briefing["pending_overlaps"] = active_overlaps
+    briefing["summary_text"] = briefing.get("headline", "")
+    briefing["top_action_items"] = [
+        {"title": it.get("title"), "desc": it.get("description"), "link": it.get("deep_link")}
+        for it in briefing.get("items", [])
     ]
+    briefing["bureau_distribution"] = bureau_caseload
+
+    return briefing
+
+
+@router.post("/gemini-key")
+async def save_gemini_key(
+    payload: Dict[str, str],
+    current_user: User = Depends(get_current_user),
+):
+    """Verify and persist a Gemini API key for live AI executive briefings."""
+    api_key = payload.get("api_key", "").strip()
+    if not api_key:
+        return {"status": "error", "message": "API key cannot be empty"}
+
+    test_result = await verify_gemini_key(api_key)
+    if not test_result.get("valid"):
+        return {"status": "error", "message": f"Verification failed: {test_result.get('error')}"}
+
+    settings.GEMINI_API_KEY = api_key
+    os.environ["GEMINI_API_KEY"] = api_key
+
+    # Attempt to persist to .env in repository root
+    try:
+        env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", ".env"))
+        if os.path.exists(env_path):
+            with open(env_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            if "GEMINI_API_KEY=" in content:
+                content = re.sub(r"GEMINI_API_KEY=.*", f"GEMINI_API_KEY={api_key}", content)
+            else:
+                content += f"\nGEMINI_API_KEY={api_key}\n"
+            with open(env_path, "w", encoding="utf-8") as f:
+                f.write(content)
+    except Exception as e:
+        logger.warning(f"Could not persist GEMINI_API_KEY to .env: {e}")
 
     return {
-        "date": today.strftime("%A, %d %B %Y"),
-        "greeting": f"Good day, {current_user.full_name}",
-        "new_cases_today": new_today,
-        "overdue_cases": overdue,
-        "pending_overlaps": active_overlaps,
-        "summary_text": f"You have {overdue} overdue complaints and {active_overlaps} pending overlaps requiring coordination decisions.",
-        "top_action_items": top_actions,
+        "status": "success",
+        "message": "Google Gemini API key verified and saved successfully! Generative AI briefings are now active.",
+        "model": "gemini-1.5-flash",
     }
+
+
+@router.get("/gemini-key/status")
+def get_gemini_key_status(current_user: User = Depends(get_current_user)):
+    """Check whether a Gemini API key is currently configured."""
+    key = get_configured_gemini_key()
+    return {
+        "configured": bool(key),
+        "masked_key": f"{key[:6]}...{key[-4:]}" if len(key) > 10 else ("***" if key else ""),
+    }
+
 
 
 # ---------------------------------------------------------------------------
