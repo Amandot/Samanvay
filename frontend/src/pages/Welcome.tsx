@@ -23,7 +23,6 @@ import {
   Link2,
   Cpu,
   BarChart3,
-  Flame
 } from 'lucide-react'
 import { useAuth, type AuthUser } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
