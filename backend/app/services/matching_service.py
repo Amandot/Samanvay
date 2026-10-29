@@ -401,6 +401,39 @@ def generate_overlaps_for_complaint(
     else:
         db.flush()
 
+    # Automatically notify assigned officers of potential overlap
+    try:
+        from app.utils.helpers import notify
+        for score, candidate, _ in scored[:limit]:
+            inst_name = candidate.institution.institution_name if candidate.institution else "Institution"
+            pct = round(score * 100)
+            if complaint.assigned_officer_id:
+                notify(
+                    db,
+                    complaint.assigned_officer_id,
+                    "Overlap Suggestion",
+                    f"Potential Overlap Detected ({pct}%)",
+                    f"Case {complaint.complaint_number} overlaps with {candidate.complaint_number} at {inst_name}. Click alert to view.",
+                    "Warning",
+                    complaint.id,
+                )
+            if candidate.assigned_officer_id and candidate.assigned_officer_id != complaint.assigned_officer_id:
+                notify(
+                    db,
+                    candidate.assigned_officer_id,
+                    "Overlap Suggestion",
+                    f"Potential Overlap Detected ({pct}%)",
+                    f"Case {candidate.complaint_number} overlaps with newly registered {complaint.complaint_number} at {inst_name}. Click alert to view.",
+                    "Warning",
+                    candidate.id,
+                )
+        if commit:
+            db.commit()
+        else:
+            db.flush()
+    except Exception:
+        pass
+
     return created
 
 

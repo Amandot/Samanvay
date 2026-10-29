@@ -98,6 +98,16 @@ export default function Overlaps() {
     if (params.get('tab') === 'accuracy') {
       setActiveTab('accuracy')
     }
+    const targetId = params.get('id')
+    if (targetId) {
+      setCoordinationOverlapId(targetId)
+      setBureauScope('all')
+    }
+    const searchTerm = params.get('search')
+    if (searchTerm) {
+      setSearch(searchTerm)
+      setBureauScope('all')
+    }
   }, [location.search])
 
   const load = useCallback(async () => {

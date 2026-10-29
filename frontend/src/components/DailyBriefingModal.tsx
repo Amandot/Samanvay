@@ -9,7 +9,6 @@ import {
   Building2,
   FileText,
   Clock,
-  Key,
   RefreshCw,
   Cpu,
   Layers,
@@ -164,13 +163,13 @@ export default function DailyBriefingModal({ open, onClose }: DailyBriefingModal
     data?.items && Array.isArray(data.items)
       ? data.items
       : (data?.top_action_items || []).map((it) => ({
-          type: 'ACTION',
-          title: it.title,
-          description: it.desc,
-          urgency: 'High',
-          deep_link: it.link || '/dashboard',
-          action_label: 'View',
-        }))
+        type: 'ACTION',
+        title: it.title,
+        description: it.desc,
+        urgency: 'High',
+        deep_link: it.link || '/dashboard',
+        action_label: 'View',
+      }))
 
   const overdueCount = data?.stats?.overdue_count ?? data?.overdue_cases ?? 0
   const activeOverlaps = data?.stats?.active_overlaps ?? data?.pending_overlaps ?? 0
@@ -224,11 +223,10 @@ export default function DailyBriefingModal({ open, onClose }: DailyBriefingModal
           <button
             type="button"
             onClick={() => setActiveTab('briefing')}
-            className={`flex items-center gap-1.5 py-2.5 px-3 border-b-2 transition-colors whitespace-nowrap ${
-              activeTab === 'briefing'
+            className={`flex items-center gap-1.5 py-2.5 px-3 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'briefing'
                 ? 'border-purple-600 text-purple-700 bg-white font-bold'
                 : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
+              }`}
           >
             <Sparkles className="h-3.5 w-3.5" />
             <span>60s Operational Briefing</span>
@@ -236,16 +234,15 @@ export default function DailyBriefingModal({ open, onClose }: DailyBriefingModal
           <button
             type="button"
             onClick={() => setActiveTab('architecture')}
-            className={`flex items-center gap-1.5 py-2.5 px-3 border-b-2 transition-colors whitespace-nowrap ${
-              activeTab === 'architecture'
+            className={`flex items-center gap-1.5 py-2.5 px-3 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'architecture'
                 ? 'border-blue-600 text-blue-700 bg-white font-bold'
                 : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
+              }`}
           >
             <Layers className="h-3.5 w-3.5" />
             <span>Project Overview &amp; Architecture</span>
           </button>
-          <button
+          {/* <button
             type="button"
             onClick={() => setActiveTab('gemini')}
             className={`flex items-center gap-1.5 py-2.5 px-3 border-b-2 transition-colors whitespace-nowrap ${
@@ -259,7 +256,7 @@ export default function DailyBriefingModal({ open, onClose }: DailyBriefingModal
             {keyConfigured && (
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
             )}
-          </button>
+          </button> */}
         </div>
 
         {/* Modal Body with Scroll */}
@@ -383,13 +380,12 @@ export default function DailyBriefingModal({ open, onClose }: DailyBriefingModal
                           <div className="min-w-0 pr-2">
                             <div className="flex items-center gap-2">
                               <span
-                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                                  item.urgency === 'Critical'
+                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${item.urgency === 'Critical'
                                     ? 'bg-red-100 text-red-800 border border-red-200'
                                     : item.urgency === 'High'
-                                    ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                                    : 'bg-blue-100 text-blue-800 border border-blue-200'
-                                }`}
+                                      ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                                      : 'bg-blue-100 text-blue-800 border border-blue-200'
+                                  }`}
                               >
                                 {item.type}
                               </span>
@@ -576,11 +572,10 @@ export default function DailyBriefingModal({ open, onClose }: DailyBriefingModal
                         </p>
                       </div>
                       <span
-                        className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                          keyConfigured
+                        className={`px-2.5 py-1 rounded-full text-xs font-bold ${keyConfigured
                             ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                             : 'bg-amber-100 text-amber-800 border border-amber-200'
-                        }`}
+                          }`}
                       >
                         {keyConfigured ? 'Gemini Ready' : 'Fallback Engine'}
                       </span>

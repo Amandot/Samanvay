@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   AlertTriangle,
   Calendar,
@@ -245,11 +246,68 @@ export default function CoordinationRoomModal({
     }
   }
 
+  // Prevent background-page scrolling while preserving internal modal scrolling
+  useEffect(() => {
+    if (!open) return
+    const originalOverflow = document.body.style.overflow
+    const originalPaddingRight = document.body.style.paddingRight
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`
+    }
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = originalOverflow
+      document.body.style.paddingRight = originalPaddingRight
+    }
+  }, [open])
+
   if (!open) return null
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-6xl max-h-[92vh] flex flex-col rounded-xl bg-white shadow-2xl border border-slate-200 overflow-hidden my-auto">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[9998] flex items-center justify-center overflow-y-auto overflow-x-hidden p-4 sm:p-6"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        minHeight: '100dvh',
+      }}
+    >
+      {/* Full-viewport fixed backdrop covering all edges & corners with blur */}
+      <div
+        className="fixed inset-0 transition-opacity"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100vw',
+          height: '100vh',
+          minHeight: '100dvh',
+          backgroundColor: 'rgba(0, 0, 0, 0.45)',
+          backdropFilter: 'blur(6px)',
+          WebkitBackdropFilter: 'blur(6px)',
+          zIndex: 9998,
+        }}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      {/* Centered Modal Container */}
+      <div
+        className="relative z-[9999] w-full max-w-6xl max-h-[92vh] flex flex-col rounded-xl bg-white shadow-2xl border border-slate-200 overflow-hidden my-auto"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b bg-navy px-6 py-4 text-white">
           <div className="flex items-center gap-3">
@@ -449,11 +507,10 @@ export default function CoordinationRoomModal({
                   <button
                     key={type}
                     onClick={() => setIntentType(type)}
-                    className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
-                      intentType === type
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${intentType === type
                         ? 'bg-navy text-white shadow-sm'
                         : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
-                    }`}
+                      }`}
                   >
                     {type}
                   </button>
@@ -580,7 +637,7 @@ export default function CoordinationRoomModal({
 
         {/* Joint Decision Modal */}
         {decisionModalOpen && (
-          <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-2xl border border-slate-200">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="text-base font-bold text-slate-900">
@@ -644,6 +701,7 @@ export default function CoordinationRoomModal({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

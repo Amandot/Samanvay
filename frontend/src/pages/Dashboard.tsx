@@ -278,9 +278,14 @@ export default function Dashboard() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                 {deskData.action_intent_conflicts.map((item) => (
-                  <div key={item.id} className="rounded-lg bg-white border border-amber-200 p-3 text-xs shadow-2xs">
+                  <div
+                    key={item.id}
+                    onClick={() => navigate(`/complaints?id=${item.case_id}`)}
+                    className="group rounded-xl bg-white border border-amber-200 p-3 text-xs shadow-2xs hover:border-amber-400 hover:shadow-xs transition-all cursor-pointer"
+                    title="Click to view conflicting case issue"
+                  >
                     <div className="flex justify-between items-center font-bold text-slate-900">
-                      <span>{item.intent_type} on {formatDate(item.planned_date)}</span>
+                      <span className="group-hover:text-amber-800 transition-colors">{item.intent_type} on {formatDate(item.planned_date)}</span>
                       <span className="text-slate-500 font-normal">{item.institution}</span>
                     </div>
                     <div className="mt-2 space-y-1">
@@ -288,6 +293,9 @@ export default function Dashboard() {
                         <p key={i} className="text-amber-800 text-[11px]">• {c}</p>
                       ))}
                     </div>
+                    <p className="mt-2 text-[10px] font-bold text-amber-700 flex items-center justify-end gap-1">
+                      View Conflicting Case &rarr;
+                    </p>
                   </div>
                 ))}
               </div>

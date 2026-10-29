@@ -260,8 +260,8 @@ export default function Welcome() {
               href="#overview"
               onClick={() => setActiveNav('overview')}
               className={`transition-colors py-1 ${activeNav === 'overview'
-                  ? 'border-b-2 border-amber-500 text-amber-600 font-bold'
-                  : 'hover:text-stone-900'
+                ? 'border-b-2 border-amber-500 text-amber-600 font-bold'
+                : 'hover:text-stone-900'
                 }`}
             >
               Overview
@@ -271,8 +271,8 @@ export default function Welcome() {
               href="#crisis-solution"
               onClick={() => setActiveNav('crisis-solution')}
               className={`transition-colors py-1 ${activeNav === 'crisis-solution'
-                  ? 'border-b-2 border-amber-500 text-amber-600 font-bold'
-                  : 'hover:text-stone-900'
+                ? 'border-b-2 border-amber-500 text-amber-600 font-bold'
+                : 'hover:text-stone-900'
                 }`}
             >
               The Challenge
@@ -282,8 +282,8 @@ export default function Welcome() {
               href="#principles"
               onClick={() => setActiveNav('principles')}
               className={`transition-colors py-1 ${activeNav === 'principles'
-                  ? 'border-b-2 border-amber-500 text-amber-600 font-bold'
-                  : 'hover:text-stone-900'
+                ? 'border-b-2 border-amber-500 text-amber-600 font-bold'
+                : 'hover:text-stone-900'
                 }`}
             >
               Solution
@@ -293,8 +293,8 @@ export default function Welcome() {
               href="#personas"
               onClick={() => setActiveNav('personas')}
               className={`transition-colors py-1 ${activeNav === 'personas'
-                  ? 'border-b-2 border-amber-500 text-amber-600 font-bold'
-                  : 'hover:text-stone-900'
+                ? 'border-b-2 border-amber-500 text-amber-600 font-bold'
+                : 'hover:text-stone-900'
                 }`}
             >
               Live Personas
@@ -304,8 +304,8 @@ export default function Welcome() {
               href="#security"
               onClick={() => setActiveNav('security')}
               className={`transition-colors py-1 ${activeNav === 'security'
-                  ? 'border-b-2 border-amber-500 text-amber-600 font-bold'
-                  : 'hover:text-stone-900'
+                ? 'border-b-2 border-amber-500 text-amber-600 font-bold'
+                : 'hover:text-stone-900'
                 }`}
             >
               Security &amp; DPDP
@@ -374,10 +374,10 @@ export default function Welcome() {
             {/* Left Column: Typography & CTAs */}
             <div className="lg:col-span-6 xl:col-span-5 space-y-6">
               {/* Pill Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/80 bg-amber-50/80 px-4 py-1.5 text-xs font-semibold text-amber-800 shadow-xs">
+              {/* <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/80 bg-amber-50/80 px-4 py-1.5 text-xs font-semibold text-amber-800 shadow-xs">
                 <Flame className="h-4 w-4 text-amber-500" />
                 <span>Smart India Hackathon 2024 · Problem Statement SIH26264</span>
-              </div>
+              </div> */}
 
               {/* Main Headline with Brush Accent */}
               <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-extrabold tracking-tight text-slate-900 leading-[1.12]">
@@ -772,8 +772,8 @@ export default function Welcome() {
                   key={s.step}
                   onClick={() => setActiveStep(s.step)}
                   className={`flex flex-col items-center p-3 rounded-2xl border text-center transition-all cursor-pointer ${isSelected
-                      ? 'border-amber-500 bg-amber-50 shadow-md scale-105'
-                      : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50'
+                    ? 'border-amber-500 bg-amber-50 shadow-md scale-105'
+                    : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50'
                     }`}
                 >
                   <span

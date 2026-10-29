@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import {
   AlertTriangle,
   ArrowRightLeft,
@@ -169,6 +170,7 @@ const emptyForm = {
 type DetailTab = 'overview' | 'action' | 'assign' | 'transfer' | 'dispose'
 
 export default function Complaints() {
+  const location = useLocation()
   const { canWrite } = useAuth()
   const [complaints, setComplaints] = useState<Complaint[]>([])
   const [institutions, setInstitutions] = useState<InstitutionOption[]>([])
@@ -418,6 +420,18 @@ export default function Complaints() {
       setDetailLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const targetId = params.get('id')
+    const targetSearch = params.get('search')
+    if (targetSearch) {
+      setSearch(targetSearch)
+    }
+    if (targetId) {
+      void openDetail(targetId)
+    }
+  }, [location.search, openDetail])
 
   const refreshDetail = async () => {
     if (detail) await openDetail(detail.id)
