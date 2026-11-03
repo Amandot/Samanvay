@@ -94,6 +94,11 @@ async def root():
     }
 
 
-@app.get("/health")
+# @app.get("/health")
+# async def health():
+#     return {"status": "healthy", "environment": settings.APP_ENV}
+
+
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def health():
     return {"status": "healthy", "environment": settings.APP_ENV}

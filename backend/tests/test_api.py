@@ -23,6 +23,10 @@ def test_health_endpoint(client):
     assert response.status_code == 200
     assert response.json()["status"] == "healthy"
 
+def test_health_endpoint_head(client):
+    response = client.head("/health")
+    assert response.status_code == 200
+
 
 def test_login_success_and_current_user(client):
     response = client.post(
