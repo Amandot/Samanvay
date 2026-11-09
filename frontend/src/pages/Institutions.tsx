@@ -153,7 +153,7 @@ export default function Institutions() {
                   viewMode === 'map' ? 'bg-white shadow-xs text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <MapPin className="h-3.5 w-3.5 text-blue-600" /> Free Leaflet Map
+                <MapPin className="h-3.5 w-3.5 text-blue-600" /> Map
               </button>
             </div>
             {canWrite && (
